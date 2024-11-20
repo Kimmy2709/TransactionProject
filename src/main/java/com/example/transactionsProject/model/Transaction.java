@@ -1,6 +1,5 @@
 package com.example.transactionsProject.model;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.codecs.pojo.annotations.BsonId;

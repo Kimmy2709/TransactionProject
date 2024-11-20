@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: API de Gestión de Transacciones Bancarias
-  description: API para registrar y gestionar transacciones bancarias, incluyendo depósitos, retiros y transferencias.
+  description: API para registrar y gestionar transacciones bancarias, incluyendo depósitos, retiros, transferencias e historial.
   version: 1.0.0
 servers:
   - url: http://localhost:8090
@@ -10,21 +10,28 @@ paths:
   /transacciones/deposito:
     post:
       summary: Registrar un depósito
-      description: Registrar una transacción de depósito en una cuenta bancaria.
+      description: Registrar una transacción de depósito entre dos cuentas bancarias.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SolicitudTransaccion'
+              $ref: '#/components/schemas/DepositoRequest'
             examples:
               deposito:
                 value:
-                  accountId: "12345"
+                  sourceAccountId: "12345"
+                  destinationAccountId: "67890"
                   amount: 1000
       responses:
         '201':
           description: Depósito registrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RespuestaTransaccion'
+        '400':
+          description: Error en la solicitud
           content:
             application/json:
               schema:
@@ -38,7 +45,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SolicitudTransaccion'
+              $ref: '#/components/schemas/RetiroRequest'
             examples:
               retiro:
                 value:
@@ -66,7 +73,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SolicitudTransferencia'
+              $ref: '#/components/schemas/TransferenciaRequest'
             examples:
               transferencia:
                 value:
@@ -82,61 +89,62 @@ paths:
                 $ref: '#/components/schemas/RespuestaTransaccion'
   /transacciones/historial:
     get:
-      summary: Consultar historial de transacciones
-      description: Devuelve el historial de todas las transacciones registradas, con opción de filtrado.
+      summary: "Consultar historial de transacciones"
+      description: "Devuelve el historial de todas las transacciones registradas, con opción de filtrado."
+      operationId: "transaccionesHistorialGet"
       parameters:
-        - name: accountId
-          in: query
-          required: false
-          description: ID de la cuenta asociada.
+        - name: "id"
+          in: "query"
+          description: "ID de la cuenta asociada"
+          required: true
           schema:
-            type: string
-        - name: transactionType
-          in: query
-          required: false
-          description: Tipo de transacción (deposito, retiro, transferencia).
-          schema:
-            type: string
-            enum: [deposito, retiro, transferencia]
-        - name: startDate
-          in: query
-          required: false
-          description: Fecha inicial para el rango de búsqueda (YYYY-MM-DD).
-          schema:
-            type: string
-            format: date
-        - name: endDate
-          in: query
-          required: false
-          description: Fecha final para el rango de búsqueda (YYYY-MM-DD).
-          schema:
-            type: string
-            format: date
+            type: "string"
       responses:
         '200':
-          description: Historial de transacciones
+          description: "Historial de transacciones"
           content:
             application/json:
               schema:
-                type: array
+                type: "array"
                 items:
-                  $ref: '#/components/schemas/RespuestaTransaccion'
+                  $ref: "#/components/schemas/RespuestaTransaccion"
+        '400':
+          description: "Error en la solicitud"
+        '500':
+          description: "Error interno del servidor"
 components:
   schemas:
-    SolicitudTransaccion:
+    DepositoRequest:
+      type: object
+      properties:
+        sourceAccountId:
+          type: string
+          description: ID de la cuenta de origen del depósito.
+        destinationAccountId:
+          type: string
+          description: ID de la cuenta de destino del depósito.
+        amount:
+          type: number
+          format: double
+          description: Monto del depósito.
+      required:
+        - sourceAccountId
+        - destinationAccountId
+        - amount
+    RetiroRequest:
       type: object
       properties:
         accountId:
           type: string
-          description: ID de la cuenta asociada.
+          description: ID de la cuenta asociada al retiro.
         amount:
           type: number
           format: double
-          description: Monto de la transacción.
+          description: Monto del retiro.
       required:
         - accountId
         - amount
-    SolicitudTransferencia:
+    TransferenciaRequest:
       type: object
       properties:
         sourceAccountId:
@@ -148,7 +156,7 @@ components:
         amount:
           type: number
           format: double
-          description: Monto a transferir.
+          description: Monto de la transferencia.
       required:
         - sourceAccountId
         - destinationAccountId
@@ -176,10 +184,9 @@ components:
         destinationAccountId:
           type: string
           nullable: true
-          description: ID de la cuenta de destino (solo para transferencias).
+          description: ID de la cuenta de destino (para transferencias y depósitos).
       required:
         - transactionId
         - transactionType
         - amount
         - date
-        - accountId

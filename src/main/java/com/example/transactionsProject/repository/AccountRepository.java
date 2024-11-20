@@ -7,5 +7,5 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface AccountRepository extends ReactiveMongoRepository<Account, String> {
-
+    Mono<Account> findByAccountNumber(String accountNumber);
 }
