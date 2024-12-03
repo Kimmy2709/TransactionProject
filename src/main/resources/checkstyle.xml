@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration
+        1.2//EN"
+        "https://checkstyle.org/dtds/configuration_1_2.dtd">
+<module name="Checker">
+    <module name="FileLength">
+        <property name="max" value="1000"/>
+    </module>
+    <module name="TreeWalker">
+        <module name="PackageName">
+            <property name="format"
+                      value="com.example.transactionsProject"/>
+        </module>
+        <module name="MethodLength">
+            <property name="max" value="30"/>
+        </module>
+        <module name="ParameterNumber">
+            <property name="max" value="6"/>
+        </module>
+        <module name="ClassDataAbstractionCoupling"/>
+        <module name="AnnotationUseStyle"/>
+        <module name="ClassFanOutComplexity">
+            <property name="max" value="20"/>
+        </module>
+        <module name="Indentation">
+            <property name="basicOffset" value="4"/>
+            <property name="tabWidth" value="4"/>
+        </module>
+        <module name="WhitespaceAround"/>
+        <module name="EmptyLineSeparator">
+            <property name="tokens" value="CLASS_DEF, METHOD_DEF"/>
+        </module>
+        <module name="ThrowsCount">
+            <property name="max" value="2"/>
+        </module>
+        <module name="NeedBraces"/>
+        <module name="RightCurly"/>
+
+    </module>
+</module>

@@ -6,8 +6,6 @@ import lombok.Setter;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
@@ -20,7 +18,16 @@ public class Account {
     private String clientId;
     private AccountType account_type;
 
-    public enum AccountType{
+
+    public enum AccountType {
         AHORROS, CORRIENTE;
+    }
+
+    public Account(String id, String accountNumber, double saldo, String clientId, AccountType account_type) {
+        this.id = id;
+        this.accountNumber = accountNumber;
+        this.saldo = saldo;
+        this.clientId = clientId;
+        this.account_type = account_type;
     }
 }
